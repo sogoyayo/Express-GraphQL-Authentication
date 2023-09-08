@@ -1,12 +1,12 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models/User');
+const User = require('../models/User');
 const { JWT_LIFETIME, JWT_SECRET } = require('../utils/constant');
 
 const resolvers = {
   Query: {
-    Users: () => {
-      return User.findAll();
+    Users: async () => {
+      return await User.find({});
     },
   },
   Mutation: {
@@ -28,15 +28,16 @@ const resolvers = {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await User.create({ username, email, password: hashedPassword });
-
+        console.log(newUser);
         const token = jwt.sign(
-            { user_id: newUser._id, email, username },
+            { id: newUser._id, email, username },
             JWT_SECRET,
             {
               expiresIn: JWT_LIFETIME,
             }
         );
-        return { ...newUser, token }
+        console.log({ ...newUser._doc, token });
+        return { ...newUser._doc, token }
     },
 
     login: async (_, { loginInput: {email, password} }) => {
@@ -61,7 +62,7 @@ const resolvers = {
               expiresIn: JWT_LIFETIME,
             }
         );
-        return { ...user, token }
+        return { ...user._doc, token }
     },
   },
 };
