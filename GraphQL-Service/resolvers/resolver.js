@@ -28,7 +28,7 @@ const resolvers = {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await User.create({ username, email, password: hashedPassword });
-        console.log(newUser);
+        // console.log(newUser);
         const token = jwt.sign(
             { id: newUser._id, email, username },
             JWT_SECRET,
@@ -36,7 +36,7 @@ const resolvers = {
               expiresIn: JWT_LIFETIME,
             }
         );
-        console.log({ ...newUser._doc, token });
+        // console.log({ ...newUser._doc, token });
         return { ...newUser._doc, token }
     },
 
